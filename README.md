@@ -1,6 +1,9 @@
-# InsuraSense - AI-Powered Churn Prediction Dashboard
+# InsuraSense: AI-Powered Insurance Churn Prediction Dashboard
 
-A modern React.js dashboard for visualizing customer churn predictions, SHAP-based feature importance, regional trends, and individual customer insights.
+A comprehensive solution for insurance companies to predict customer churn, understand risk factors, and develop targeted retention strategies. This project includes:
+
+1. A Streamlit dashboard for data analysis and visualization
+2. A React.js frontend for modern UI experience
 
 ## Features
 

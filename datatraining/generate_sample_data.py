@@ -7,7 +7,7 @@ import pandas as pd
 import numpy as np
 from typing import Tuple
 
-def generate_churn_data(n_samples: int = 1000, random_state: int = 42) -> pd.DataFrame:
+def generate_churn_data(n_samples: int = 20000, random_state: int = 42) -> pd.DataFrame:
     """
     Generate realistic churn data with patterns.
     
@@ -123,7 +123,7 @@ def main():
     print("Generating sample churn data...")
     
     # Generate base data
-    data = generate_churn_data(n_samples=1000)
+    data = generate_churn_data(n_samples=20000)
     
     # Add missing values for realism
     data_with_missing = add_missing_values(data, missing_rate=0.05)

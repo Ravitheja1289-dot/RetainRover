@@ -1,6 +1,21 @@
-# TODO List for Cleaning Up Unnecessary Files and Consolidating Backend
+# TODO List for Insurance Churn Prediction Dashboard
 
-- [x] Delete unnecessary files: hi.txt, test_shap_plot.png, api_backend.py, credit_model.py, enhanced_credit_model.py, demo_improvements.py, start_server.py, ENHANCED_SETUP.md, PARAGRAPH_SUMMARIES_GUIDE.md, PROJECT_SUMMARY.md
-- [x] Create app.py in root with enhanced code from datatraining/app.py, adding /models, /feature_importance, /model_comparison endpoints adapted for single model
-- [x] Delete datatraining/app.py
-- [x] Test the new app.py to ensure it works
+## Completed
+- [x] Replaced FastAPI backend with Streamlit dashboard
+- [x] Created sample data generator for demo purposes
+- [x] Implemented data input stage with file upload and sample data options
+- [x] Built model training and prediction workflow
+- [x] Added global feature importance visualization
+- [x] Implemented SHAP-based local explanations for individual customers
+- [x] Created plain-English insights generator for retention strategies
+- [x] Updated documentation (README.md and README_RUN.md)
+- [x] Updated requirements.txt with Streamlit dependency
+
+## Remaining Tasks
+- [ ] Add region-wise churn heatmap visualization
+- [ ] Implement model comparison functionality
+- [ ] Create download functionality for predictions and explanations
+- [ ] Add customer segmentation visualization
+- [ ] Improve UI with more Streamlit components (metrics, progress bars)
+- [ ] Add more sample datasets for different insurance types
+- [ ] Create unit tests for the dashboard

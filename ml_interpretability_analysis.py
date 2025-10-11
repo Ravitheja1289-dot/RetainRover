@@ -87,7 +87,7 @@ class MLInterpretabilityAnalyzer:
         preprocessor = ColumnTransformer(
             transformers=[
                 ('num', SimpleImputer(strategy='median'), numerical_cols),
-                ('cat', OneHotEncoder(drop='first', handle_unknown='ignore'), categorical_cols)
+                ('cat', OneHotEncoder(drop='first', handle_unknown='ignore', sparse_output=False), categorical_cols)
             ])
         
         # Split data
@@ -192,7 +192,7 @@ class MLInterpretabilityAnalyzer:
         preprocessor = ColumnTransformer(
             transformers=[
                 ('num', StandardScaler(), numerical_cols),
-                ('cat', OneHotEncoder(drop='first', handle_unknown='ignore'), categorical_cols)
+                ('cat', OneHotEncoder(drop='first', handle_unknown='ignore', sparse_output=False), categorical_cols)
             ])
         
         # Split data

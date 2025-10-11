@@ -227,7 +227,7 @@ async def performance_test():
     
     # Generate test data
     np.random.seed(42)
-    n_samples = 1000
+    n_samples = 20000
     
     # Create test dataset
     test_data = {

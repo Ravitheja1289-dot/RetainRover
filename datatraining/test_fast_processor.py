@@ -10,7 +10,7 @@ import time
 import io
 
 # Test data generation
-def generate_test_dataset(n_samples=1000, dataset_type="churn"):
+def generate_test_dataset(n_samples=20000, dataset_type="churn"):
     """Generate test datasets for different scenarios."""
     
     if dataset_type == "churn":
