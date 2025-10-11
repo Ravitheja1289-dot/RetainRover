@@ -5,8 +5,8 @@ import regionalTrendsData from '../data/regionalTrends.json';
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 // API Configuration
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
-const USE_REAL_API = process.env.REACT_APP_USE_REAL_API === 'true';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const USE_REAL_API = import.meta.env.VITE_USE_REAL_API === 'true';
 
 export interface Customer {
   id: number;
