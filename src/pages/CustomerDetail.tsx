@@ -96,102 +96,104 @@ export const CustomerDetail = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
-      <div className="max-w-7xl mx-auto p-6 space-y-6">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
+      <div className="mx-auto max-w-7xl space-y-8 p-6">
         <button
           onClick={() => navigate('/')}
-          className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors"
+          className="inline-flex items-center gap-2 rounded-xl bg-white/80 px-4 py-2 text-sm font-medium text-slate-600 shadow-sm ring-1 ring-slate-200/70 backdrop-blur transition-all hover:-translate-y-0.5 hover:shadow-lg dark:bg-slate-900/80 dark:text-slate-300 dark:ring-slate-800/70"
         >
-          <ArrowLeft className="w-5 h-5" />
+          <ArrowLeft className="h-4 w-4" />
           <span>Back to Dashboard</span>
         </button>
 
-        <div className={`rounded-lg border-2 ${risk.borderColor} ${risk.bg} p-6`}>
-          <div className="flex items-start justify-between mb-4">
-            <div className="flex items-center space-x-4">
-              <div className="bg-white dark:bg-gray-800 p-4 rounded-full">
-                <User className="w-8 h-8 text-gray-600 dark:text-gray-400" />
+        <div className={`relative overflow-hidden rounded-3xl border-2 ${risk.borderColor} ${risk.bg} p-8 shadow-xl backdrop-blur`}>
+          <div className="relative">
+            <div className="mb-6 flex flex-col items-start justify-between gap-6 lg:flex-row lg:items-center">
+              <div className="flex items-center gap-4">
+                <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-500 text-3xl font-semibold text-white shadow-lg">
+                  {customer.name ? customer.name.charAt(0).toUpperCase() : '?'}
+                </div>
+                <div>
+                  <h1 className="text-4xl font-bold text-slate-900 dark:text-white">
+                    {customer.name}
+                  </h1>
+                  <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Customer ID: {customer.id}</p>
+                </div>
               </div>
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-                  {customer.name}
-                </h1>
-                <p className="text-gray-600 dark:text-gray-400">Customer ID: {customer.id}</p>
+              <div className="text-left lg:text-right">
+                <div className={`mb-3 inline-flex items-center gap-2 rounded-full px-5 py-2 text-sm font-semibold ${risk.bg} ${risk.color} border-2 ${risk.borderColor} shadow-lg`}>
+                  <RiskIcon className="h-5 w-5" />
+                  <span>{risk.label}</span>
+                </div>
+                <div>
+                  <span className="text-5xl font-bold text-slate-900 dark:text-white">
+                    {customer.churnProbability}%
+                  </span>
+                  <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Churn Probability</p>
+                </div>
               </div>
             </div>
-            <div className="text-right">
-              <div className={`inline-flex items-center space-x-2 px-4 py-2 rounded-full text-sm font-medium ${risk.bg} ${risk.color} border-2 ${risk.borderColor}`}>
-                <RiskIcon className="w-5 h-5" />
-                <span>{risk.label}</span>
-              </div>
-              <div className="mt-2">
-                <span className="text-4xl font-bold text-gray-900 dark:text-white">
-                  {customer.churnProbability}%
-                </span>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Churn Probability</p>
-              </div>
-            </div>
-          </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mt-6">
-            <div className="flex items-center space-x-2">
-              <MapPin className="w-5 h-5 text-gray-500 dark:text-gray-400" />
-              <div>
-                <p className="text-xs text-gray-600 dark:text-gray-400">Region</p>
-                <p className="text-sm font-medium text-gray-900 dark:text-white">{customer.region}</p>
+            <div className="grid grid-cols-2 gap-4 md:grid-cols-5">
+              <div className="rounded-2xl border border-slate-200/70 bg-white/70 p-4 backdrop-blur dark:border-slate-800/70 dark:bg-slate-900/70">
+                <div className="mb-2 flex items-center gap-2">
+                  <MapPin className="h-5 w-5 text-blue-500" />
+                  <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Region</p>
+                </div>
+                <p className="text-base font-semibold text-slate-900 dark:text-white">{customer.region}</p>
+              </div>
+              <div className="rounded-2xl border border-slate-200/70 bg-white/70 p-4 backdrop-blur dark:border-slate-800/70 dark:bg-slate-900/70">
+                <div className="mb-2 flex items-center gap-2">
+                  <Calendar className="h-5 w-5 text-blue-500" />
+                  <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Age</p>
+                </div>
+                <p className="text-base font-semibold text-slate-900 dark:text-white">{customer.age} years</p>
+              </div>
+              <div className="rounded-2xl border border-slate-200/70 bg-white/70 p-4 backdrop-blur dark:border-slate-800/70 dark:bg-slate-900/70">
+                <div className="mb-2 flex items-center gap-2">
+                  <Calendar className="h-5 w-5 text-blue-500" />
+                  <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Tenure</p>
+                </div>
+                <p className="text-base font-semibold text-slate-900 dark:text-white">{customer.tenure} years</p>
+              </div>
+              <div className="rounded-2xl border border-slate-200/70 bg-white/70 p-4 backdrop-blur dark:border-slate-800/70 dark:bg-slate-900/70">
+                <div className="mb-2 flex items-center gap-2">
+                  <DollarSign className="h-5 w-5 text-blue-500" />
+                  <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Premium</p>
+                </div>
+                <p className="text-base font-semibold text-slate-900 dark:text-white">${customer.premiumAmount}/mo</p>
+              </div>
+              <div className="rounded-2xl border border-slate-200/70 bg-white/70 p-4 backdrop-blur dark:border-slate-800/70 dark:bg-slate-900/70">
+                <div className="mb-2 flex items-center gap-2">
+                  <FileText className="h-5 w-5 text-blue-500" />
+                  <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Claims</p>
+                </div>
+                <p className="text-base font-semibold text-slate-900 dark:text-white">{customer.claimsCount}</p>
               </div>
             </div>
-            <div className="flex items-center space-x-2">
-              <Calendar className="w-5 h-5 text-gray-500 dark:text-gray-400" />
-              <div>
-                <p className="text-xs text-gray-600 dark:text-gray-400">Age</p>
-                <p className="text-sm font-medium text-gray-900 dark:text-white">{customer.age} years</p>
-              </div>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Calendar className="w-5 h-5 text-gray-500 dark:text-gray-400" />
-              <div>
-                <p className="text-xs text-gray-600 dark:text-gray-400">Tenure</p>
-                <p className="text-sm font-medium text-gray-900 dark:text-white">{customer.tenure} years</p>
-              </div>
-            </div>
-            <div className="flex items-center space-x-2">
-              <DollarSign className="w-5 h-5 text-gray-500 dark:text-gray-400" />
-              <div>
-                <p className="text-xs text-gray-600 dark:text-gray-400">Premium</p>
-                <p className="text-sm font-medium text-gray-900 dark:text-white">${customer.premiumAmount}/mo</p>
-              </div>
-            </div>
-            <div className="flex items-center space-x-2">
-              <FileText className="w-5 h-5 text-gray-500 dark:text-gray-400" />
-              <div>
-                <p className="text-xs text-gray-600 dark:text-gray-400">Claims</p>
-                <p className="text-sm font-medium text-gray-900 dark:text-white">{customer.claimsCount}</p>
-              </div>
-            </div>
-          </div>
 
-          <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-            <div className="flex items-center space-x-2">
-              <Phone className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Last interaction: {new Date(customer.lastInteraction).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
-              </p>
+            <div className="mt-6 rounded-2xl border border-slate-200/70 bg-white/70 p-4 backdrop-blur dark:border-slate-800/70 dark:bg-slate-900/70">
+              <div className="flex items-center gap-2">
+                <Phone className="h-4 w-4 text-blue-500" />
+                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">
+                  Last interaction: <span className="font-semibold text-slate-900 dark:text-white">{new Date(customer.lastInteraction).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
+                </p>
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+        <div className="rounded-3xl border border-slate-200/70 bg-white/80 p-8 shadow-lg backdrop-blur dark:border-slate-800/70 dark:bg-slate-900/80">
+          <h2 className="mb-4 text-2xl font-semibold text-slate-900 dark:text-white">
             Churn Prediction Explanation
           </h2>
-          <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+          <p className="leading-relaxed text-slate-700 dark:text-slate-300">
             {getExplanation()}
           </p>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
+        <div className="rounded-3xl border border-slate-200/70 bg-white/80 p-8 shadow-lg backdrop-blur dark:border-slate-800/70 dark:bg-slate-900/80">
+          <h2 className="mb-6 text-2xl font-semibold text-slate-900 dark:text-white">
             Feature Contributions to Churn Score
           </h2>
 
@@ -232,22 +234,22 @@ export const CustomerDetail = () => {
             </ResponsiveContainer>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             {featureContributions.map((contribution) => (
               <div
                 key={contribution.feature}
-                className="flex items-center justify-between p-4 rounded-lg bg-gray-50 dark:bg-gray-900/50"
+                className="flex items-center justify-between rounded-2xl border border-slate-200/70 bg-white/70 p-4 backdrop-blur dark:border-slate-800/70 dark:bg-slate-900/70"
               >
-                <div className="flex items-center space-x-3">
+                <div className="flex items-center gap-3">
                   <div
-                    className={`w-3 h-3 rounded-full ${contribution.value > 0 ? 'bg-red-500' : 'bg-green-500'}`}
+                    className={`h-3 w-3 rounded-full shadow-lg ${contribution.value > 0 ? 'bg-rose-500' : 'bg-emerald-500'}`}
                   ></div>
-                  <span className="text-sm font-medium text-gray-900 dark:text-white">
+                  <span className="text-sm font-semibold text-slate-900 dark:text-white">
                     {contribution.feature}
                   </span>
                 </div>
                 <div className="text-right">
-                  <span className={`text-sm font-bold ${contribution.value > 0 ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}>
+                  <span className={`text-sm font-bold ${contribution.value > 0 ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'}`}>
                     {contribution.value > 0 ? '+' : ''}{(contribution.value * 100).toFixed(1)}%
                   </span>
                 </div>
@@ -255,51 +257,59 @@ export const CustomerDetail = () => {
             ))}
           </div>
 
-          <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-            <p className="text-sm text-blue-900 dark:text-blue-100">
-              <span className="font-medium">How to read this chart:</span> Positive values (red bars) increase churn probability,
+          <div className="mt-6 rounded-2xl border border-blue-200/70 bg-blue-50/80 p-4 backdrop-blur dark:border-blue-800/70 dark:bg-blue-900/30">
+            <p className="text-sm leading-relaxed text-blue-900 dark:text-blue-100">
+              <span className="font-semibold">How to read this chart:</span> Positive values (red bars) increase churn probability,
               while negative values (green bars) decrease it. Longer bars indicate stronger influence on the prediction.
             </p>
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+        <div className="rounded-3xl border border-slate-200/70 bg-white/80 p-8 shadow-lg backdrop-blur dark:border-slate-800/70 dark:bg-slate-900/80">
+          <h2 className="mb-6 text-2xl font-semibold text-slate-900 dark:text-white">
             Recommended Actions
           </h2>
-          <div className="space-y-3">
+          <div className="space-y-4">
             {customer.churnProbability >= 60 && (
               <>
-                <div className="flex items-start space-x-3 p-3 bg-red-50 dark:bg-red-900/20 rounded-lg">
-                  <AlertTriangle className="w-5 h-5 text-red-600 dark:text-red-400 mt-0.5 flex-shrink-0" />
-                  <div>
-                    <p className="text-sm font-medium text-gray-900 dark:text-white">Urgent outreach required</p>
-                    <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">Schedule immediate call with retention specialist</p>
+                <div className="flex items-start gap-4 rounded-2xl border border-rose-200/70 bg-rose-50/80 p-4 backdrop-blur dark:border-rose-800/70 dark:bg-rose-900/30">
+                  <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-rose-500/10 ring-1 ring-rose-500/30">
+                    <AlertTriangle className="h-5 w-5 text-rose-600 dark:text-rose-400" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-semibold text-slate-900 dark:text-white">Urgent outreach required</p>
+                    <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">Schedule immediate call with retention specialist</p>
                   </div>
                 </div>
-                <div className="flex items-start space-x-3 p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
-                  <DollarSign className="w-5 h-5 text-orange-600 dark:text-orange-400 mt-0.5 flex-shrink-0" />
-                  <div>
-                    <p className="text-sm font-medium text-gray-900 dark:text-white">Offer premium discount or loyalty incentive</p>
-                    <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">Consider 10-15% discount for annual commitment</p>
+                <div className="flex items-start gap-4 rounded-2xl border border-amber-200/70 bg-amber-50/80 p-4 backdrop-blur dark:border-amber-800/70 dark:bg-amber-900/30">
+                  <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-amber-500/10 ring-1 ring-amber-500/30">
+                    <DollarSign className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-semibold text-slate-900 dark:text-white">Offer premium discount or loyalty incentive</p>
+                    <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">Consider 10-15% discount for annual commitment</p>
                   </div>
                 </div>
               </>
             )}
             {customer.churnProbability >= 30 && customer.churnProbability < 60 && (
-              <div className="flex items-start space-x-3 p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
-                <Phone className="w-5 h-5 text-orange-600 dark:text-orange-400 mt-0.5 flex-shrink-0" />
-                <div>
-                  <p className="text-sm font-medium text-gray-900 dark:text-white">Proactive engagement recommended</p>
-                  <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">Reach out to check satisfaction and address concerns</p>
+              <div className="flex items-start gap-4 rounded-2xl border border-amber-200/70 bg-amber-50/80 p-4 backdrop-blur dark:border-amber-800/70 dark:bg-amber-900/30">
+                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-amber-500/10 ring-1 ring-amber-500/30">
+                  <Phone className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+                </div>
+                <div className="flex-1">
+                  <p className="font-semibold text-slate-900 dark:text-white">Proactive engagement recommended</p>
+                  <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">Reach out to check satisfaction and address concerns</p>
                 </div>
               </div>
             )}
-            <div className="flex items-start space-x-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-              <CheckCircle className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
-              <div>
-                <p className="text-sm font-medium text-gray-900 dark:text-white">Monitor customer sentiment</p>
-                <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">Track engagement metrics and satisfaction scores monthly</p>
+            <div className="flex items-start gap-4 rounded-2xl border border-blue-200/70 bg-blue-50/80 p-4 backdrop-blur dark:border-blue-800/70 dark:bg-blue-900/30">
+              <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-blue-500/10 ring-1 ring-blue-500/30">
+                <CheckCircle className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+              </div>
+              <div className="flex-1">
+                <p className="font-semibold text-slate-900 dark:text-white">Monitor customer sentiment</p>
+                <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">Track engagement metrics and satisfaction scores monthly</p>
               </div>
             </div>
           </div>

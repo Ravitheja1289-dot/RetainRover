@@ -1,4 +1,4 @@
-import { Lightbulb, TrendingUp, AlertTriangle, Target } from 'lucide-react';
+import { Lightbulb, TrendingUp, AlertTriangle, Target, Sparkles, Brain } from 'lucide-react';
 
 export const InsightsTab = () => {
   const insights = [
@@ -37,26 +37,30 @@ export const InsightsTab = () => {
   ];
 
   const getColorClasses = (color: string) => {
-    const colors: Record<string, { bg: string; text: string; icon: string }> = {
+    const colors: Record<string, { bg: string; text: string; icon: string; border: string }> = {
       red: {
-        bg: 'bg-red-50 dark:bg-red-900/20',
-        text: 'text-red-900 dark:text-red-100',
-        icon: 'text-red-600 dark:text-red-400'
+        bg: 'bg-rose-50/80 dark:bg-rose-900/30',
+        text: 'text-rose-900 dark:text-rose-100',
+        icon: 'text-rose-600 dark:text-rose-400',
+        border: 'border-rose-200/70 dark:border-rose-800/70'
       },
       orange: {
-        bg: 'bg-orange-50 dark:bg-orange-900/20',
-        text: 'text-orange-900 dark:text-orange-100',
-        icon: 'text-orange-600 dark:text-orange-400'
+        bg: 'bg-amber-50/80 dark:bg-amber-900/30',
+        text: 'text-amber-900 dark:text-amber-100',
+        icon: 'text-amber-600 dark:text-amber-400',
+        border: 'border-amber-200/70 dark:border-amber-800/70'
       },
       blue: {
-        bg: 'bg-blue-50 dark:bg-blue-900/20',
+        bg: 'bg-blue-50/80 dark:bg-blue-900/30',
         text: 'text-blue-900 dark:text-blue-100',
-        icon: 'text-blue-600 dark:text-blue-400'
+        icon: 'text-blue-600 dark:text-blue-400',
+        border: 'border-blue-200/70 dark:border-blue-800/70'
       },
       green: {
-        bg: 'bg-green-50 dark:bg-green-900/20',
-        text: 'text-green-900 dark:text-green-100',
-        icon: 'text-green-600 dark:text-green-400'
+        bg: 'bg-emerald-50/80 dark:bg-emerald-900/30',
+        text: 'text-emerald-900 dark:text-emerald-100',
+        icon: 'text-emerald-600 dark:text-emerald-400',
+        border: 'border-emerald-200/70 dark:border-emerald-800/70'
       }
     };
     return colors[color] || colors.blue;
@@ -64,52 +68,76 @@ export const InsightsTab = () => {
 
   const getImpactBadge = (impact: string) => {
     const styles: Record<string, string> = {
-      Critical: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',
-      High: 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300',
-      Medium: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300'
+      Critical: 'bg-rose-500/10 text-rose-700 dark:bg-rose-500/20 dark:text-rose-300 ring-1 ring-rose-500/30',
+      High: 'bg-amber-500/10 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300 ring-1 ring-amber-500/30',
+      Medium: 'bg-blue-500/10 text-blue-700 dark:bg-blue-500/20 dark:text-blue-300 ring-1 ring-blue-500/30'
     };
     return styles[impact] || styles.Medium;
   };
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="bg-gradient-to-r from-blue-600 to-cyan-600 rounded-lg p-6 text-white">
-        <h2 className="text-2xl font-bold mb-2">AI-Generated Insights</h2>
-        <p className="text-blue-100">
-          Key findings and actionable recommendations based on churn prediction analysis
-        </p>
+    <div className="space-y-8 p-6">
+      {/* Hero Section */}
+      <div className="relative overflow-hidden rounded-3xl border border-blue-500/20 bg-gradient-to-br from-blue-600/10 via-cyan-500/10 to-transparent p-8 shadow-lg transition-shadow hover:shadow-2xl dark:border-blue-400/20 dark:from-blue-500/15 dark:via-sky-500/10">
+        <div className="absolute -top-24 -right-12 h-64 w-64 rounded-full bg-blue-500/30 blur-3xl animate-pulse-slow" aria-hidden="true"></div>
+        <div className="absolute -bottom-20 -left-10 h-64 w-64 rounded-full bg-cyan-500/20 blur-3xl animate-pulse-slow" aria-hidden="true"></div>
+        <div className="relative space-y-6">
+          <div className="inline-flex items-center gap-2 rounded-full bg-white/70 px-4 py-2 text-sm font-medium text-blue-700 shadow-sm ring-1 ring-blue-500/20 backdrop-blur dark:bg-slate-900/70 dark:text-blue-200">
+            <Brain className="h-4 w-4" />
+            AI-powered strategic insights
+          </div>
+          <div className="space-y-3">
+            <h2 className="text-3xl font-semibold text-slate-900 dark:text-white sm:text-4xl">
+              Transform data patterns into retention playbooks
+            </h2>
+            <p className="text-base text-slate-600 dark:text-slate-300 sm:max-w-3xl">
+              Key findings and actionable recommendations based on churn prediction analysis. Each insight is backed by AI-driven pattern recognition and designed to guide your next best action.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-3 text-sm text-slate-600 dark:text-slate-300">
+            <span className="inline-flex items-center gap-2 rounded-full bg-white/70 px-3 py-2 ring-1 ring-slate-200/70 backdrop-blur dark:bg-slate-900/70 dark:ring-slate-700/70">
+              <Sparkles className="h-4 w-4 text-blue-500" />
+              {insights.length} strategic insights
+            </span>
+            <span className="inline-flex items-center gap-2 rounded-full bg-white/70 px-3 py-2 ring-1 ring-slate-200/70 backdrop-blur dark:bg-slate-900/70 dark:ring-slate-700/70">
+              <Target className="h-4 w-4 text-blue-500" />
+              Actionable recommendations
+            </span>
+          </div>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* Insights Grid */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {insights.map((insight, index) => {
           const Icon = insight.icon;
           const colors = getColorClasses(insight.color);
           return (
             <div
               key={index}
-              className={`rounded-lg border-2 border-gray-200 dark:border-gray-700 p-6 hover:shadow-lg transition-all ${colors.bg}`}
+              className={`group relative overflow-hidden rounded-3xl border ${colors.border} ${colors.bg} p-6 shadow-lg backdrop-blur transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl`}
             >
-              <div className="flex items-start space-x-4">
-                <div className={`p-3 rounded-lg bg-white dark:bg-gray-800 ${colors.icon}`}>
-                  <Icon className="w-6 h-6" />
+              <div className="relative flex items-start gap-4">
+                <div className={`flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl bg-white/80 shadow-lg ring-1 ring-slate-200/70 backdrop-blur dark:bg-slate-900/80 dark:ring-slate-800/70 ${colors.icon}`}>
+                  <Icon className="h-7 w-7" />
                 </div>
-                <div className="flex-1">
-                  <div className="flex items-start justify-between mb-2">
+                <div className="flex-1 space-y-4">
+                  <div className="flex items-start justify-between gap-3">
                     <h3 className={`text-lg font-semibold ${colors.text}`}>
                       {insight.title}
                     </h3>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getImpactBadge(insight.impact)}`}>
+                    <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${getImpactBadge(insight.impact)}`}>
                       {insight.impact}
                     </span>
                   </div>
-                  <p className="text-sm text-gray-700 dark:text-gray-300 mb-4">
+                  <p className="text-sm leading-relaxed text-slate-700 dark:text-slate-300">
                     {insight.description}
                   </p>
-                  <div className="bg-white dark:bg-gray-800 rounded-lg p-3 border border-gray-200 dark:border-gray-700">
-                    <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
-                      Recommendation
+                  <div className="rounded-2xl border border-slate-200/70 bg-white/70 p-4 backdrop-blur dark:border-slate-800/70 dark:bg-slate-900/70">
+                    <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                      Recommended Action
                     </p>
-                    <p className="text-sm text-gray-900 dark:text-white">
+                    <p className="text-sm leading-relaxed text-slate-900 dark:text-white">
                       {insight.recommendation}
                     </p>
                   </div>
@@ -120,46 +148,57 @@ export const InsightsTab = () => {
         })}
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-          Overall Churn Prevention Strategy
-        </h3>
+      {/* Strategy Section */}
+      <div className="rounded-3xl border border-slate-200/70 bg-white/80 p-8 shadow-lg backdrop-blur dark:border-slate-800/70 dark:bg-slate-900/80">
+        <div className="mb-6 flex items-center gap-3">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-500 text-white shadow-lg">
+            <Target className="h-6 w-6" />
+          </div>
+          <div>
+            <h3 className="text-xl font-semibold text-slate-900 dark:text-white">
+              Overall Churn Prevention Strategy
+            </h3>
+            <p className="text-sm text-slate-500 dark:text-slate-400">
+              Integrated approach for maximum retention impact
+            </p>
+          </div>
+        </div>
         <div className="space-y-4">
-          <div className="flex items-start space-x-3">
-            <div className="bg-blue-100 dark:bg-blue-900/30 rounded-full p-1 mt-0.5">
-              <div className="w-2 h-2 bg-blue-600 dark:bg-blue-400 rounded-full"></div>
+          <div className="flex items-start gap-4 rounded-2xl border border-slate-200/70 bg-white/70 p-4 backdrop-blur dark:border-slate-800/70 dark:bg-slate-900/70">
+            <div className="mt-1 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-xl bg-blue-500/10 ring-1 ring-blue-500/30">
+              <div className="h-2 w-2 rounded-full bg-blue-600 dark:bg-blue-400"></div>
             </div>
-            <div>
-              <p className="text-sm font-medium text-gray-900 dark:text-white">
+            <div className="flex-1">
+              <p className="font-semibold text-slate-900 dark:text-white">
                 Prioritize high-risk customers (70%+ churn probability)
               </p>
-              <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+              <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
                 Focus retention efforts on customers most likely to leave for maximum ROI
               </p>
             </div>
           </div>
-          <div className="flex items-start space-x-3">
-            <div className="bg-blue-100 dark:bg-blue-900/30 rounded-full p-1 mt-0.5">
-              <div className="w-2 h-2 bg-blue-600 dark:bg-blue-400 rounded-full"></div>
+          <div className="flex items-start gap-4 rounded-2xl border border-slate-200/70 bg-white/70 p-4 backdrop-blur dark:border-slate-800/70 dark:bg-slate-900/70">
+            <div className="mt-1 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-xl bg-blue-500/10 ring-1 ring-blue-500/30">
+              <div className="h-2 w-2 rounded-full bg-blue-600 dark:bg-blue-400"></div>
             </div>
-            <div>
-              <p className="text-sm font-medium text-gray-900 dark:text-white">
+            <div className="flex-1">
+              <p className="font-semibold text-slate-900 dark:text-white">
                 Address root causes (claims experience, engagement)
               </p>
-              <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+              <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
                 Improve claims process and maintain regular touchpoints with customers
               </p>
             </div>
           </div>
-          <div className="flex items-start space-x-3">
-            <div className="bg-blue-100 dark:bg-blue-900/30 rounded-full p-1 mt-0.5">
-              <div className="w-2 h-2 bg-blue-600 dark:bg-blue-400 rounded-full"></div>
+          <div className="flex items-start gap-4 rounded-2xl border border-slate-200/70 bg-white/70 p-4 backdrop-blur dark:border-slate-800/70 dark:bg-slate-900/70">
+            <div className="mt-1 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-xl bg-blue-500/10 ring-1 ring-blue-500/30">
+              <div className="h-2 w-2 rounded-full bg-blue-600 dark:bg-blue-400"></div>
             </div>
-            <div>
-              <p className="text-sm font-medium text-gray-900 dark:text-white">
+            <div className="flex-1">
+              <p className="font-semibold text-slate-900 dark:text-white">
                 Regional customization of retention strategies
               </p>
-              <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+              <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
                 Tailor approaches based on regional differences in churn patterns
               </p>
             </div>
