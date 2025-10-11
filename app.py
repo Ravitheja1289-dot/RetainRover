@@ -151,7 +151,7 @@ def predict_data(_model, X):
     return predict_in_batches(_model, X, batch_size=2000)
 
 @st.cache_data
-def compute_shap_sample(_model, _preprocessor, data, feature_names, max_sample_size=200):
+def compute_shap_sample(_model, _preprocessor, data, feature_names, max_sample_size=1000):
     """
     Compute SHAP values for a limited sample of data to improve performance.
     Limits sample size to prevent performance issues with large datasets.
@@ -478,9 +478,9 @@ def generate_shap_values(model, preprocessor, data, feature_names):
     features = data.drop(['customer_id', 'churn'], axis=1, errors='ignore')
     
     # Use the cached compute_shap_sample function to calculate SHAP values
-    # This will automatically limit to 200 samples for large datasets
+    # This will use 1000 samples for SHAP analysis
     explainer, shap_values, X_processed = compute_shap_sample(
-        model, preprocessor, features, feature_names, max_sample_size=200
+        model, preprocessor, features, feature_names, max_sample_size=1000
     )
     
     return explainer, shap_values
@@ -701,7 +701,7 @@ def render_dashboard():
                     uploaded_file.seek(0)
                     
                     # Read data with row limit for large files
-                    MAX_ROWS = 1000
+                    MAX_ROWS = 20000
                     data = pd.read_csv(uploaded_file)
                     original_row_count = len(data)
                     

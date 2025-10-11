@@ -293,13 +293,13 @@ class MLInterpretabilityAnalyzer:
             # Use TreeExplainer for RandomForest, LinearExplainer for LogisticRegression
             if model_name == 'RandomForest':
                 explainer = shap.TreeExplainer(model.named_steps['classifier'])
-                shap_values = explainer.shap_values(X_test_transformed[:1000])  # Limit for performance
+                shap_values = explainer.shap_values(X_test_transformed[:20000])  # Use more samples for better performance
             else:
-                explainer = shap.LinearExplainer(model.named_steps['classifier'], X_train_transformed[:1000])
-                shap_values = explainer.shap_values(X_test_transformed[:1000])
+                explainer = shap.LinearExplainer(model.named_steps['classifier'], X_train_transformed[:20000])
+                shap_values = explainer.shap_values(X_test_transformed[:20000])
             
             # Create visualizations
-            self._create_shap_plots(explainer, shap_values, X_test_transformed[:1000], feature_names, dataset_name, model_name)
+            self._create_shap_plots(explainer, shap_values, X_test_transformed[:20000], feature_names, dataset_name, model_name)
             
             return explainer, shap_values
             
@@ -383,7 +383,7 @@ class MLInterpretabilityAnalyzer:
         # Create LIME explainer
         try:
             explainer = LimeTabularExplainer(
-                X_train_transformed[:1000],  # Limit for performance
+                X_train_transformed[:20000],  # Use more samples for better performance
                 feature_names=feature_names,
                 class_names=['Class 0', 'Class 1'],
                 mode='classification',

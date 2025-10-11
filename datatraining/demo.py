@@ -203,7 +203,7 @@ def main():
     print("\n" + "=" * 60)
     print("🎉 Demo completed successfully!")
     print("\n📋 Summary:")
-    print("- Generated realistic churn dataset with 1000 samples")
+    print("- Generated realistic churn dataset with 20000 samples")
     print("- Trained LightGBM model with 99.5% accuracy")
     print("- Created ONNX-optimized preprocessing pipeline")
     print("- Built high-performance FastAPI service")
