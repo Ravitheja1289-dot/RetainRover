@@ -1,0 +1,42 @@
+[
+  {
+    "feature": "Claims Count",
+    "importance": 0.42,
+    "description": "Number of claims filed in the last year"
+  },
+  {
+    "feature": "Tenure",
+    "importance": 0.35,
+    "description": "Years with the company"
+  },
+  {
+    "feature": "Premium Amount",
+    "importance": 0.28,
+    "description": "Monthly premium payment"
+  },
+  {
+    "feature": "Last Interaction",
+    "importance": 0.24,
+    "description": "Days since last customer interaction"
+  },
+  {
+    "feature": "Age",
+    "importance": 0.18,
+    "description": "Customer age"
+  },
+  {
+    "feature": "Customer Service Calls",
+    "importance": 0.15,
+    "description": "Number of support interactions"
+  },
+  {
+    "feature": "Payment Method",
+    "importance": 0.12,
+    "description": "Auto-pay vs manual payment"
+  },
+  {
+    "feature": "Policy Type",
+    "importance": 0.09,
+    "description": "Type of insurance coverage"
+  }
+]

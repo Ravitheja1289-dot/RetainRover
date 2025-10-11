@@ -1,234 +1,238 @@
-# Machine Learning Model Interpretability Analysis with SHAP and LIME
+# InsuraSense - AI-Powered Churn Prediction Dashboard
 
-This project provides comprehensive model interpretability analysis using SHAP (SHapley Additive exPlanations) and LIME (Local Interpretable Model-agnostic Explanations) for credit prediction and auto insurance churn datasets.
+A modern React.js dashboard for visualizing customer churn predictions, SHAP-based feature importance, regional trends, and individual customer insights.
 
-## 🎯 Project Overview
+## Features
 
-This project demonstrates how to:
-- Train machine learning models on large datasets
-- Implement SHAP for global and local model interpretability
-- Use LIME for individual prediction explanations
-- Compare model performance and interpretability
-- Generate comprehensive analysis reports
+### Dashboard Tabs
 
-## 📊 Datasets
+1. **Customers Tab**
+   - Comprehensive customer table with color-coded risk indicators
+   - Churn probability visualization with progress bars
+   - Quick access to detailed customer views
+   - Risk levels: Low (<30%), Medium (30-60%), High (>60%)
 
-The project includes several large datasets:
+2. **Feature Importance Tab**
+   - SHAP global feature importance visualization
+   - Interactive bar charts showing feature contributions
+   - Detailed descriptions for each feature
+   - Color-coded importance levels
 
-1. **Demographic Dataset** (`Datasets/demographic.csv`)
-   - Credit prediction task
-   - Features: Income, Marital Status, Home Market Value, etc.
-   - Target: GOOD_CREDIT (binary classification)
+3. **Regional Trends Tab**
+   - Regional churn rate comparison
+   - Customer distribution by region
+   - Average tenure analysis
+   - Visual cards with key metrics
 
-2. **Auto Insurance Churn Dataset** (`Datasets/autoinsurance_churn.csv`)
-   - Customer churn prediction
-   - Various customer and policy features
+4. **Insights Tab**
+   - AI-generated actionable insights
+   - Strategic recommendations
+   - Impact-level categorization
+   - Overall churn prevention strategy
 
-3. **Additional Datasets**
-   - Address data (`Datasets/address.csv`)
-   - Customer data (`Datasets/customer.csv`)
-   - Termination data (`Datasets/termination.csv`)
+5. **Customer Detail Page**
+   - Individual customer profile
+   - Churn probability breakdown
+   - Feature contribution analysis
+   - AI-generated explanations
+   - Recommended retention actions
 
-## 🚀 Quick Start
+### Additional Features
+
+- **Dark Mode**: Toggle between light and dark themes with persistent preference
+- **Responsive Design**: Fully optimized for mobile, tablet, and desktop
+- **Loading States**: Smooth loading indicators for all data fetches
+- **Professional UI**: Clean, modern SaaS-style interface with gradients and animations
+
+## Tech Stack
+
+- **React 18** with TypeScript
+- **Vite** for fast development and building
+- **React Router** for navigation
+- **Recharts** for data visualizations
+- **Tailwind CSS** for styling
+- **Lucide React** for icons
+
+## Project Structure
+
+```
+src/
+├── components/           # Reusable UI components
+│   ├── CustomersTab.tsx
+│   ├── FeatureImportanceTab.tsx
+│   ├── RegionalTrendsTab.tsx
+│   ├── InsightsTab.tsx
+│   ├── Header.tsx
+│   ├── Tabs.tsx
+│   └── LoadingSpinner.tsx
+├── contexts/            # React context providers
+│   └── ThemeContext.tsx
+├── data/                # Mock API data
+│   ├── customers.json
+│   ├── featureImportance.json
+│   └── regionalTrends.json
+├── pages/               # Page components
+│   ├── Dashboard.tsx
+│   └── CustomerDetail.tsx
+├── services/            # API service layer
+│   └── api.ts
+├── App.tsx
+└── main.tsx
+```
+
+## Getting Started
 
 ### Prerequisites
 
+- Node.js (v16 or higher)
+- npm or yarn
+
+### Installation
+
+1. Clone the repository or extract the project files
+
+2. Install dependencies:
 ```bash
-pip install -r requirements.txt
+npm install
 ```
 
-### Running the Analysis
+### Running the Application
 
-#### Option 1: Run the Complete Analysis Script
+Development mode with hot reload:
 ```bash
-python ml_interpretability_analysis.py
+npm run dev
 ```
 
-#### Option 2: Use the Jupyter Notebook
+The application will be available at `http://localhost:5173`
+
+### Building for Production
+
 ```bash
-jupyter notebook ml_interpretability_notebook.ipynb
+npm run build
 ```
 
-## 📁 Project Structure
+The built files will be in the `dist/` directory.
 
-```
-Megathon-25/
-├── Datasets/                          # Large datasets (200MB+ each)
-│   ├── demographic.csv                # Main credit prediction dataset
-│   ├── autoinsurance_churn.csv        # Auto insurance churn data
-│   ├── address.csv                    # Address/location data
-│   ├── customer.csv                   # Customer information
-│   └── termination.csv                # Account termination data
-├── ml_interpretability_analysis.py    # Complete analysis script
-├── ml_interpretability_notebook.ipynb # Interactive Jupyter notebook
-├── accuracy.ipynb                     # Original analysis notebook
-├── credit_model.py                    # Original model script
-├── requirements.txt                   # Python dependencies
-└── README.md                         # This file
+### Preview Production Build
+
+```bash
+npm run preview
 ```
 
-## 🔍 Analysis Components
+## Mock API Endpoints
 
-### 1. Model Training
-- **Random Forest Classifier**: Non-linear ensemble method
-- **Logistic Regression**: Linear interpretable model
-- Proper preprocessing with categorical encoding
-- Balanced class weights for imbalanced datasets
+The application uses a simulated API layer that mimics the following endpoints:
 
-### 2. SHAP Analysis
-- **Global Explanations**: Feature importance across all predictions
-- **Local Explanations**: Individual prediction breakdowns
-- **Summary Plots**: Feature impact visualization
-- **Waterfall Plots**: Step-by-step prediction process
-- **Bar Plots**: Feature importance rankings
+- `GET /api/customers` - List of all customers with churn predictions
+- `GET /api/customer/:id` - Individual customer details
+- `GET /api/feature_importance` - SHAP feature importance values
+- `GET /api/region_trends` - Regional churn statistics
 
-### 3. LIME Analysis
-- **Local Interpretable Explanations**: Individual instance explanations
-- **Feature Importance**: Per-prediction feature contributions
-- **Visual Explanations**: Easy-to-understand decision breakdowns
-- **Multiple Instance Analysis**: Various prediction scenarios
+### Integrating with Real API
 
-### 4. Model Comparison
-- **Performance Metrics**: Accuracy, Precision, Recall, F1, ROC-AUC
-- **Confusion Matrices**: Classification performance visualization
-- **Feature Importance Comparison**: SHAP vs traditional methods
-- **Interpretability Analysis**: Model explainability comparison
+To connect to your FastAPI backend:
 
-### 5. Non-Technical Summaries
-- **Paragraph Explanations**: Business-friendly performance summaries
-- **Executive Reports**: High-level insights for stakeholders
-- **Plain Language Analysis**: Easy-to-understand explanations
-- **Business Impact Assessment**: ROI and strategic recommendations
+1. Update `src/services/api.ts` to replace mock data with actual fetch calls:
 
-## 📈 Generated Outputs
-
-The analysis generates several types of outputs:
-
-### Visualizations
-- `shap_summary_*.png`: SHAP summary plots
-- `shap_waterfall_*.png`: SHAP waterfall plots
-- `shap_bar_*.png`: SHAP feature importance plots
-- `lime_explanation_*.png`: LIME individual explanations
-- `model_comparison_*.png`: Model performance comparisons
-- `confusion_matrix_*.png`: Confusion matrices
-
-### Reports
-- `ml_interpretability_report.md`: Comprehensive analysis report with paragraph summaries
-- **Non-technical summaries**: Business-friendly explanations of all metrics
-- **Executive summaries**: High-level insights for stakeholders
-- **Performance paragraphs**: Plain language analysis of model results
-- Feature importance rankings with business context
-- Interpretability insights with practical applications
-
-## 🛠️ Key Features
-
-### Comprehensive Analysis
-- Multiple datasets support
-- Various model types (Random Forest, Logistic Regression)
-- Both global and local interpretability
-- Performance comparison across models
-
-### Production Ready
-- Scalable preprocessing pipelines
-- Error handling and validation
-- Configurable analysis parameters
-- Automated report generation
-
-### Interpretability Focus
-- SHAP for consistent explanations
-- LIME for local understanding
-- Multiple visualization types
-- Business-friendly insights
-
-### Non-Technical Communication
-- **Paragraph summaries**: Convert technical metrics into business language
-- **Executive reports**: High-level insights for decision makers
-- **Plain language analysis**: Easy-to-understand explanations
-- **Business impact assessment**: ROI and strategic recommendations
-
-## 📊 Model Performance
-
-The models are evaluated using multiple metrics, with each metric explained in business-friendly language:
-
-- **Accuracy**: Overall correct predictions (e.g., "82.3% accuracy means the model correctly identifies 82 out of every 100 cases")
-- **Precision**: True positives / (True positives + False positives) (e.g., "78.9% precision means when the model predicts good credit, it's correct 78% of the time")
-- **Recall**: True positives / (True positives + False negatives) (e.g., "85.7% recall means the model successfully identifies 85% of all actual good credit cases")
-- **F1-Score**: Harmonic mean of precision and recall (balanced performance measure)
-- **ROC-AUC**: Area under the ROC curve (discriminatory ability - how well the model distinguishes between classes)
-
-**Non-Technical Summary**: All metrics are automatically converted into paragraph explanations that describe what the numbers mean in practical business terms, making the analysis accessible to non-technical stakeholders.
-
-## 🔧 Technical Details
-
-### Dependencies
-- **pandas**: Data manipulation
-- **numpy**: Numerical computations
-- **scikit-learn**: Machine learning algorithms
-- **shap**: SHAP explanations
-- **lime**: LIME explanations
-- **matplotlib/seaborn**: Visualizations
-- **jupyter**: Interactive notebooks
-
-### Performance Considerations
-- Large datasets (200MB+) are handled efficiently
-- Sampling for SHAP/LIME explanations (1000 instances)
-- Memory-optimized preprocessing
-- Parallel processing where possible
-
-## 📝 Usage Examples
-
-### Basic Usage
-```python
-from ml_interpretability_analysis import MLInterpretabilityAnalyzer
-
-# Initialize analyzer
-analyzer = MLInterpretabilityAnalyzer()
-
-# Run complete analysis
-analyzer.run_complete_analysis()
+```typescript
+export const api = {
+  async getCustomers(): Promise<Customer[]> {
+    const response = await fetch('YOUR_API_URL/api/customers');
+    return response.json();
+  },
+  // ... other methods
+};
 ```
 
-### Custom Analysis
-```python
-# Load specific datasets
-analyzer.load_datasets()
+2. Add environment variables in `.env`:
 
-# Train specific models
-analyzer.prepare_demographic_model()
-
-# Create SHAP explanations
-analyzer.create_shap_explanations('demographic', 'RandomForest')
-
-# Generate LIME explanations
-analyzer.create_lime_explanations('demographic', 'RandomForest')
+```
+VITE_API_BASE_URL=http://your-backend-url
 ```
 
-## 🤝 Contributing
+3. Update the API service to use the environment variable:
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
+```typescript
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+```
 
-## 📄 License
+## Data Structure
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+### Customer Object
+```typescript
+interface Customer {
+  id: number;
+  name: string;
+  region: string;
+  churnProbability: number;
+  age: number;
+  tenure: number;
+  premiumAmount: number;
+  claimsCount: number;
+  lastInteraction: string;
+}
+```
 
-## 🙏 Acknowledgments
+### Feature Importance Object
+```typescript
+interface FeatureImportance {
+  feature: string;
+  importance: number;
+  description: string;
+}
+```
 
-- SHAP library for model interpretability
-- LIME library for local explanations
-- Scikit-learn for machine learning algorithms
-- The open-source community for various tools and libraries
+### Regional Trend Object
+```typescript
+interface RegionalTrend {
+  region: string;
+  churnRate: number;
+  totalCustomers: number;
+  churnedCustomers: number;
+  avgTenure: number;
+}
+```
 
-## 📞 Support
+## Customization
 
-For questions or issues:
-1. Check the existing issues in the repository
-2. Create a new issue with detailed description
-3. Contact the maintainers
+### Colors & Theme
 
----
+Modify `tailwind.config.js` to customize the color palette and design tokens.
 
-**Note**: This project handles large datasets (200MB+) and may require significant computational resources for full analysis. Consider using sampling or cloud computing resources for production use.
+### Adding New Features
+
+1. Create feature-specific data in `src/data/`
+2. Add API method in `src/services/api.ts`
+3. Create component in `src/components/`
+4. Add to Dashboard tabs or routing as needed
+
+## Browser Support
+
+- Chrome (latest)
+- Firefox (latest)
+- Safari (latest)
+- Edge (latest)
+
+## Performance
+
+- Code splitting implemented via React Router
+- Lazy loading for heavy components
+- Optimized bundle size with tree shaking
+- Efficient re-renders with proper React patterns
+
+## Future Enhancements
+
+- Export data to CSV/PDF
+- Advanced filtering and search
+- Real-time data updates via WebSocket
+- Customer comparison tool
+- Predictive timeline visualization
+- Email notification system
+
+## License
+
+This project is for demonstration purposes.
+
+## Support
+
+For questions or issues, please contact your development team.

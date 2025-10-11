@@ -1,0 +1,4 @@
+- [x] Install papaparse dependency for CSV parsing
+- [x] Modify src/services/api.ts to support mutable customers data and setCustomers function
+- [x] Modify src/components/CustomersTab.tsx to add import button and handle CSV file upload
+- [x] Test the import functionality

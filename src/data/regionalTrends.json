@@ -1,0 +1,30 @@
+[
+  {
+    "region": "Northeast",
+    "churnRate": 62.7,
+    "totalCustomers": 3542,
+    "churnedCustomers": 2220,
+    "avgTenure": 11.2
+  },
+  {
+    "region": "West",
+    "churnRate": 40.0,
+    "totalCustomers": 4128,
+    "churnedCustomers": 1651,
+    "avgTenure": 14.8
+  },
+  {
+    "region": "South",
+    "churnRate": 31.0,
+    "totalCustomers": 3891,
+    "churnedCustomers": 1206,
+    "avgTenure": 16.3
+  },
+  {
+    "region": "Midwest",
+    "churnRate": 58.0,
+    "totalCustomers": 2965,
+    "churnedCustomers": 1720,
+    "avgTenure": 10.5
+  }
+]
