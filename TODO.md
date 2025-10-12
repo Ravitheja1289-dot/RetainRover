@@ -7,6 +7,7 @@
 - [x] Built model training and prediction workflow
 - [x] Added global feature importance visualization
 - [x] Implemented SHAP-based local explanations for individual customers
+- [x] Implemented LIME-based local explanations for individual customers
 - [x] Created plain-English insights generator for retention strategies
 - [x] Updated documentation (README.md and README_RUN.md)
 - [x] Updated requirements.txt with Streamlit dependency
