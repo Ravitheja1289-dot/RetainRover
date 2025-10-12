@@ -20,3 +20,7 @@
 - [ ] Improve UI with more Streamlit components (metrics, progress bars)
 - [ ] Add more sample datasets for different insurance types
 - [ ] Create unit tests for the dashboard
+
+## Fixed Issues
+- [x] Fixed indexing error in customer analysis tab when fetching customer data for SHAP explanations
+- [x] Removed "Could not find customer ID column in data" warning since the logic now properly handles cases without customer_id column

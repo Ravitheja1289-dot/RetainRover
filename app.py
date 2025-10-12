@@ -47,10 +47,6 @@ st.set_page_config(
     layout="wide"
 )
 
-# Horizontal navigation bar
-st.title("RetainRover")
-st.image("image1.jpg", width=200)
-
 # Create horizontal navigation tabs
 tab_dashboard, tab_model_info, tab_about = st.tabs(["Dashboard", "Model Information", "About"])
 
@@ -842,10 +838,13 @@ def render_dashboard():
                                     # Extract the preprocessor and model from the pipeline
                                     preprocessor = pipeline.named_steps['preprocessor']
                                     model = pipeline.named_steps['model']
-                                    
+
                                     # Store in session state
                                     st.session_state.preprocessor = preprocessor
                                     st.session_state.model = model
+
+                                    # Update feature names from loaded preprocessor
+                                    st.session_state.feature_names = [name.split('__')[1] if '__' in name else name for name in preprocessor.get_feature_names_out()]
                                     
                                     st.success("Model loaded successfully!")
                                     st.info("You can now go directly to the Churn Prediction tab.")
@@ -926,7 +925,10 @@ def render_dashboard():
                         # Fit preprocessor
                         X_train_processed = preprocessor.fit_transform(X_train)
                         X_test_processed = preprocessor.transform(X_test)
-                        
+
+                        # Update feature names after fitting preprocessor
+                        st.session_state.feature_names = [name.split('__')[1] if '__' in name else name for name in preprocessor.get_feature_names_out()]
+
                         # Train model with improved algorithms and hyperparameters
                         model, metrics = train_model(X_train_processed, y_train, X_test_processed, y_test, preprocessor)
                         
@@ -1177,8 +1179,6 @@ def render_dashboard():
                             ]
                             if not customer_data.empty:
                                 st.dataframe(customer_data)
-                        else:
-                            st.warning("Could not find customer ID column in data")
                 
                 # Get customer preprocessed data for SHAP
                 data = st.session_state.data.copy()
@@ -1188,7 +1188,15 @@ def render_dashboard():
                     if col in data.columns:
                         drop_cols.append(col)
                 X = data.drop(drop_cols, axis=1, errors='ignore')
-                customer_data = X.iloc[customer_idx:customer_idx+1]
+
+                # Find the correct row index in data using customer ID
+                if customer_id_col:
+                    customer_row_index = st.session_state.data[st.session_state.data[customer_id_col] == selected_customer].index[0]
+                    customer_data = X.loc[[customer_row_index]]
+                else:
+                    # If no customer ID column, selected_customer is the data index
+                    customer_data = X.loc[[selected_customer]]
+
                 X_processed = st.session_state.preprocessor.transform(customer_data)
                 
                 # Generate local SHAP explanation
