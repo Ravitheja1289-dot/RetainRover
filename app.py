@@ -722,48 +722,138 @@ def generate_english_insight(shap_df, churn_prob):
     
     return insight
 
-def generate_lime_explanation(lime_explainer, processed_data, feature_names, sample_idx=0):
+def generate_lime_explanation(lime_explainer, data, feature_names, sample_idx=0):
     """
-    Generate LIME explanation for a specific customer
+    Generate LIME explanation for a specific customer using
+    Local Interpretable Model-agnostic Explanations (LIME).
+    
+    Parameters:
+    -----------
+    lime_explainer : LimeTabularExplainer
+        The LIME explainer object trained on the training data
+    data : array-like
+        The data for the instance to explain (should match format expected by explainer)
+    feature_names : list
+        List of feature names
+    sample_idx : int, default=0
+        Index of the sample in data to explain
+        
+    Returns:
+    --------
+    fig : plotly Figure
+        The visualization of LIME explanations
+    lime_df : pandas DataFrame
+        DataFrame containing the feature contributions
+    exp : LimeTabularExplanation
+        The raw LIME explanation object for further analysis
     """
-    # Get the sample data
-    sample = processed_data[sample_idx:sample_idx+1]
-
+    # Create a wrapper for prediction that preprocesses data if needed
+    def predict_fn(x):
+        # The data passed to this function should already be preprocessed,
+        # but we'll make it robust just in case
+        if isinstance(x, np.ndarray) and len(x.shape) == 1:
+            # If single instance in wrong shape, reshape it
+            x = x.reshape(1, -1)
+        return st.session_state.model.predict_proba(x)
+    
+    # Handle data format based on type
+    if isinstance(data, pd.DataFrame):
+        # Get the right instance from DataFrame
+        instance = data.iloc[sample_idx].values
+    elif isinstance(data, np.ndarray):
+        # If it's already a 2D array or a matrix, get the specific instance
+        if len(data.shape) > 1:
+            if sample_idx < data.shape[0]:
+                instance = data[sample_idx]
+            else:
+                instance = data[0]
+        else:
+            # If it's already a 1D array
+            instance = data
+    else:
+        # Default case
+        instance = data
+    
     # Generate LIME explanation
-    exp = lime_explainer.explain_instance(
-        sample[0],  # The sample data
-        st.session_state.model.predict_proba,  # Prediction function
-        num_features=10,  # Number of features to show
-        top_labels=1  # Only explain the positive class (churn)
-    )
+    try:
+        exp = lime_explainer.explain_instance(
+            instance,  # The instance to explain
+            predict_fn,  # Prediction function
+            num_features=10,  # Number of features to show
+            top_labels=1,  # Only explain the positive class (churn)
+            model_regressor=None  # Use default Ridge regression for local surrogate model
+        )
+    except Exception as e:
+        # If we hit an error, try to debug it
+        error_msg = str(e)
+        if "Invalid prediction shape" in error_msg:
+            # Try adding dummy dimension if needed
+            if len(instance.shape) == 1:
+                instance = instance.reshape(1, -1)
+                exp = lime_explainer.explain_instance(
+                    instance[0],
+                    predict_fn,
+                    num_features=10,
+                    top_labels=1
+                )
+        else:
+            # Re-raise if it's not a shape issue
+            raise e
 
-    # Extract feature contributions
-    feature_contributions = exp.as_list(label=1)  # Label 1 is churn
-
+    # Extract feature contributions for visualization
+    # Try with label=1 first (for churn) and if that fails, try with the first label
+    try:
+        feature_contributions = exp.as_list(label=1)  # Label 1 is churn
+    except Exception:
+        # If label=1 fails, try getting all labels and use the first one
+        labels = exp.available_labels()
+        if labels:
+            feature_contributions = exp.as_list(label=labels[0])
+        else:
+            # Fallback to an empty list if no labels available
+            feature_contributions = []
+    
+    if not feature_contributions:
+        raise ValueError("No feature contributions available from LIME explainer")
+        
     # Create dataframe for plotting
     lime_df = pd.DataFrame({
         'Feature': [feat for feat, _ in feature_contributions],
-        'Value': [val for _, val in feature_contributions]
-    }).sort_values('Value', ascending=False)
+        'Value': [val for _, val in feature_contributions],
+        'Abs_Value': [abs(val) for _, val in feature_contributions]  # For sorting by importance
+    }).sort_values('Abs_Value', ascending=False)
 
-    # Create plotly figure
+    # Create plotly figure with improved styling for readability
     fig = px.bar(
         lime_df,
         x='Value',
         y='Feature',
         orientation='h',
-        title='LIME Feature Contribution to Churn Prediction',
+        title='LIME Feature Contribution to Retention/Churn Prediction',
         color='Value',
-        color_continuous_scale='RdBu_r'
+        color_continuous_scale='RdBu_r',  # Blue (negative) to Red (positive)
+        labels={'Value': 'Impact on Prediction (+ increases churn, - decreases)'}
     )
 
     fig.update_layout(
         xaxis_title="LIME Value (Impact on Prediction)",
         yaxis_title="Feature",
-        yaxis=dict(autorange="reversed")
+        yaxis=dict(autorange="reversed"),
+        height=400,  # Set fixed height for consistent layout
+        margin=dict(l=10, r=10, t=40, b=10),  # Tighter margins
+        title_font=dict(size=16),
+        plot_bgcolor='rgba(0,0,0,0.05)' if st.session_state.get('dark_mode', True) else 'rgba(240,240,240,0.5)'  # Slight background color for readability
+    )
+    
+    # Add a vertical line at x=0 for reference
+    fig.add_shape(
+        type="line",
+        x0=0, y0=-0.5,
+        x1=0, y1=len(feature_contributions) - 0.5,
+        line=dict(color="gray", width=1, dash="dot")
     )
 
-    return fig, lime_df
+    return fig, lime_df, exp
 
 def render_dashboard():
     st.title("RetainRover: Customer Retention Prediction")
@@ -976,16 +1066,42 @@ def render_dashboard():
                         st.session_state.explainer = explainer
 
                         # Create LIME explainer
+                        st.info("Initializing LIME explainer for individual prediction explanations...")
+                        # For LIME, we need the training data in its raw form (before preprocessing)
+                        # but we'll limit the sample size for efficiency
                         X_train_sample = X_train if len(X_train) <= 20000 else X_train.sample(20000, random_state=42)
+                        
+                        # Store the preprocessed data for reference
                         X_train_processed_sample = preprocessor.transform(X_train_sample)
                         st.session_state.X_train_processed_sample = X_train_processed_sample
-                        st.session_state.lime_explainer = LimeTabularExplainer(
-                            X_train_processed_sample,
-                            feature_names=feature_names,
-                            class_names=['Stay', 'Churn'],
-                            mode='classification',
-                            discretize_continuous=True
-                        )
+                        
+                        # For LIME, we need to make sure feature names are correctly defined
+                        # We'll use the plain feature names or generate them if needed
+                        all_features = list(X_train_sample.columns)
+                        
+                        # Create LIME explainer with proper configuration
+                        try:
+                            # Store the raw features and processed features mapping
+                            st.session_state.raw_feature_names = all_features
+                            
+                            # For LIME, we need the training data and the model pipeline
+                            st.session_state.lime_explainer = LimeTabularExplainer(
+                                training_data=X_train_processed,  # Use preprocessed data for consistency
+                                feature_names=st.session_state.feature_names,  # Use feature names after preprocessing
+                                class_names=['Stay', 'Churn'],
+                                mode='classification',
+                                discretize_continuous=False,  # Data is already preprocessed
+                                random_state=42,
+                                verbose=False
+                            )
+                            
+                            # Store reference to the model for prediction function
+                            st.session_state.model_for_lime = model
+                            
+                            st.success("LIME explainer successfully created! You can now analyze individual predictions.")
+                        except Exception as e:
+                            st.warning(f"Could not create LIME explainer: {e}. Individual explanations will be limited to SHAP.")
+                            st.session_state.lime_explainer = None
 
                         # Calculate region-wise churn if Region column exists
                         if 'Region' in data.columns:
@@ -1226,25 +1342,104 @@ def render_dashboard():
                     st.write(insight)
 
                     # Generate LIME explanation
-                    try:
-                        lime_fig, lime_df = generate_lime_explanation(
-                            st.session_state.lime_explainer,
-                            X_processed,
-                            st.session_state.feature_names,
-                            0  # Since we're only passing one sample
-                        )
+                    if st.session_state.lime_explainer is not None:
+                        with st.expander("👁️ LIME Explanation (Click to expand for detailed insights)", expanded=False):
+                            try:
+                                # We need to use preprocessed data for LIME since the explainer was trained on preprocessed data
+                                with st.spinner("Generating LIME explanation..."):
+                                    # Make sure we're using the preprocessed data for this customer
+                                    lime_fig, lime_df, lime_exp = generate_lime_explanation(
+                                        st.session_state.lime_explainer,
+                                        X_processed,  # Use the preprocessed data that matches what LIME expects
+                                        st.session_state.feature_names,  # Use feature names after preprocessing
+                                        0  # Since we're only passing one sample
+                                    )
 
-                        st.subheader("LIME Feature Contributions")
-                        st.plotly_chart(lime_fig, use_container_width=True)
+                                # Create two columns for visualization
+                                col1, col2 = st.columns([3, 2])
+                                
+                                with col1:
+                                    st.subheader("LIME Feature Contributions")
+                                    st.plotly_chart(lime_fig, use_container_width=True)
+                                
+                                with col2:
+                                    st.subheader("How to Read This Chart")
+                                    st.markdown("""
+                                    **Red bars (positive values)** indicate factors that increase the likelihood of churn.
+                                    
+                                    **Blue bars (negative values)** indicate factors that decrease the likelihood of churn.
+                                    
+                                    The length of each bar shows the relative importance of that factor for this specific prediction.
+                                    """)
+                                    
+                                    # Show the prediction probability
+                                    st.metric(
+                                        "Predicted Probability of Churn",
+                                        f"{customer_prob:.2%}",
+                                        delta="High Risk" if customer_prob > 0.7 else 
+                                              "Medium Risk" if customer_prob > 0.4 else "Low Risk"
+                                    )
 
-                        st.write("""
-                        LIME (Local Interpretable Model-agnostic Explanations) provides local explanations
-                        by approximating the model locally with an interpretable model. This shows how
-                        individual features contribute to this specific customer's churn prediction.
-                        """)
+                                # Show additional insights in text form
+                                st.subheader("Key Insights")
+                                
+                                # Get top positive and negative factors
+                                positive_factors = lime_df[lime_df['Value'] > 0].head(3)
+                                negative_factors = lime_df[lime_df['Value'] < 0].head(3)
+                                
+                                if not positive_factors.empty:
+                                    st.markdown("#### Top Factors Increasing Churn Risk:")
+                                    for i, (_, row) in enumerate(positive_factors.iterrows()):
+                                        st.markdown(f"**{i+1}. {row['Feature']}**: Impact score of {row['Value']:.4f}")
+                                
+                                if not negative_factors.empty:
+                                    st.markdown("#### Top Factors Decreasing Churn Risk:")
+                                    for i, (_, row) in enumerate(negative_factors.iterrows()):
+                                        st.markdown(f"**{i+1}. {row['Feature']}**: Impact score of {row['Value']:.4f}")
+                                
+                                st.markdown("""
+                                #### What is LIME?
+                                
+                                LIME (Local Interpretable Model-agnostic Explanations) creates a simpler, interpretable model
+                                around this specific prediction to explain what factors most influenced the outcome.
+                                
+                                It works by perturbing the input data and seeing how the prediction changes, allowing us
+                                to understand which features matter most for this particular case.
+                                
+                                This helps identify customer-specific retention strategies based on their unique risk factors.
+                                """)
 
-                    except Exception as e:
-                        st.warning(f"LIME explanation not available: {e}")
+                            except Exception as e:
+                                st.warning("LIME explanation could not be generated")
+                                
+                                # Show detailed error and debugging information
+                                with st.expander("Show error details"):
+                                    st.code(f"Error: {str(e)}", language="python")
+                                    
+                                    # Show more debugging info
+                                    st.write("### Debugging Information")
+                                    st.write(f"- Explainer type: {type(st.session_state.lime_explainer)}")
+                                    st.write(f"- Data shape: {X_processed.shape}")
+                                    st.write(f"- Number of feature names: {len(st.session_state.feature_names)}")
+                                    
+                                    # Try to show some of the data
+                                    try:
+                                        st.write("Sample processed data (first few values):")
+                                        st.write(X_processed[0][:5])
+                                    except Exception:
+                                        st.write("Could not show sample data")
+                                
+                                # Provide troubleshooting info
+                                st.markdown("""
+                                **Troubleshooting Tips:**
+                                
+                                1. Try retraining the model to refresh the LIME explainer
+                                2. This record may have unusual feature values that LIME can't handle
+                                3. The data format might not match what LIME expects - ensure feature counts match
+                                4. Consider using SHAP explanations as an alternative
+                                """)
+                    else:
+                        st.info("LIME explainer not available. Train or reload the model to enable LIME explanations.")
 
                 except Exception as e:
                     st.error(f"Error generating explanation: {e}")
