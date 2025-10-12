@@ -1,6 +1,6 @@
 """
-Insurance Churn Prediction Dashboard
-This Streamlit app allows insurance companies to analyze customer churn risk factors,
+RetainRover - Customer Retention Prediction Dashboard
+This Streamlit app allows companies to analyze customer churn risk factors,
 make predictions, and view model explanations using SHAP values.
 """
 
@@ -40,13 +40,13 @@ import plotly.express as px
 import plotly.graph_objects as go
 # Configure the page
 st.set_page_config(
-    page_title="InsuraSense - Insurance Churn Prediction",
-    page_icon="🔍",
+    page_title="RetainRover - Customer Retention Prediction",
+    page_icon="",
     layout="wide"
 )
 
 # Sidebar for navigation
-st.sidebar.title("InsuraSense")
+st.sidebar.title("RetainRover")
 st.sidebar.image("image1.jpg", width=200)
 page = st.sidebar.radio("Navigation", ["Dashboard", "Model Information", "About"])
 
@@ -717,9 +717,9 @@ def generate_english_insight(shap_df, churn_prob):
     return insight
 
 def render_dashboard():
-    st.title("InsuraSense: Insurance Churn Prediction")
+    st.title("RetainRover: Customer Retention Prediction")
     st.markdown("""
-    This dashboard helps insurance companies predict which customers are likely to churn, 
+    This dashboard helps companies predict which customers are likely to churn, 
     understand the reasons behind churn, and develop targeted retention strategies.
     """)
     
@@ -1163,10 +1163,10 @@ def render_model_info():
     st.markdown("""
     ### How Our Churn Prediction Works
     
-    The InsuraSense churn prediction system uses machine learning to identify customers 
-    at risk of canceling their insurance policies. Here's how it works:
+    The RetainRover churn prediction system uses machine learning to identify customers 
+    at risk of canceling their services. Here's how it works:
     
-    1. **Data Collection**: Customer demographic data, policy information, and historical behavior
+    1. **Data Collection**: Customer demographic data, service information, and historical behavior
     2. **Feature Engineering**: Transform raw data into predictive features
     3. **Model Training**: Random Forest algorithm learns patterns from historical data
     4. **Prediction**: Assign each customer a churn probability score (0-1)
@@ -1208,16 +1208,16 @@ def render_model_info():
     """)
 
 def render_about():
-    st.title("About InsuraSense")
+    st.title("About RetainRover")
     
     st.markdown("""
-    ### InsuraSense: Insurance Churn Prediction Dashboard
+    ### RetainRover: Customer Retention Prediction Dashboard
     
-    InsuraSense helps insurance companies identify and retain at-risk customers through 
+    RetainRover helps companies identify and retain at-risk customers through 
     predictive analytics and explainable AI.
     
     Developed for the Megathon 2025 competition, this solution demonstrates how machine learning
-    can be applied to solve real business problems in the insurance industry.
+    can be applied to solve real business problems across various industries.
     
     ### Why Churn Prediction Matters
     
@@ -1227,7 +1227,7 @@ def render_about():
     
     ### Our Solution
     
-    The InsuraSense dashboard provides:
+    The RetainRover dashboard provides:
     
     1. Accurate churn predictions
     2. Clear explanations of risk factors
@@ -1236,7 +1236,7 @@ def render_about():
     
     ### Contact
     
-    For more information, please contact: contact@insurasense.com
+    For more information, please contact: contact@retainrover.com
     """)
 
 # Main application logic
