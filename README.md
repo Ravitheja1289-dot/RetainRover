@@ -1,241 +1,96 @@
-# InsuraSense: AI-Powered Insurance Churn Prediction Dashboard
+# RetainRover — Run & Deploy Guide
 
-A comprehensive solution for insurance companies to predict customer churn, understand risk factors, and develop targeted retention strategies. This project includes:
+This repository contains RetainRover (a.k.a. InsuraSense) — a Streamlit-based Machine Learning dashboard for predicting customer/employee retention (churn) and explaining predictions using SHAP and LIME.
 
-1. A Streamlit dashboard for data analysis and visualization
-2. A React.js frontend for modern UI experience
+This README focuses on how to run the project locally, run the Streamlit app, and where to find the live deployment.
 
-## Features
+Live demo: https://retainrover.streamlit.app/
 
-### Dashboard Tabs
+---
 
-1. **Customers Tab**
-   - Comprehensive customer table with color-coded risk indicators
-   - Churn probability visualization with progress bars
-   - Quick access to detailed customer views
-   - Risk levels: Low (<30%), Medium (30-60%), High (>60%)
+## Contents of this repository
 
-2. **Feature Importance Tab**
-   - SHAP global feature importance visualization
-   - Interactive bar charts showing feature contributions
-   - Detailed descriptions for each feature
-   - Color-coded importance levels
+- `app.py` — Main Streamlit application (dashboard, model training, SHAP & LIME explanations).
+- `datatraining/` — Training and sample data, training scripts, and model artifacts.
+- `models/` — Saved model artifacts (pipeline, pickles) if available.
+- `public/`, `scripts/`, `src/` — Frontend static files and React app used for a modern UI (optional).
+- `requirements.txt` — Python dependencies required to run the Streamlit app.
 
-3. **Regional Trends Tab**
-   - Regional churn rate comparison
-   - Customer distribution by region
-   - Average tenure analysis
-   - Visual cards with key metrics
+## Quick links
 
-4. **Insights Tab**
-   - AI-generated actionable insights
-   - Strategic recommendations
-   - Impact-level categorization
-   - Overall churn prevention strategy
+- Live application: https://retainrover.streamlit.app/
+- Run the Streamlit app locally: `streamlit run app.py`
 
-5. **Customer Detail Page**
-   - Individual customer profile
-   - Churn probability breakdown
-   - Feature contribution analysis
-   - AI-generated explanations
-   - Recommended retention actions
+---
 
-### Additional Features
+## Running the Streamlit app (Windows)
 
-- **Dark Mode**: Toggle between light and dark themes with persistent preference
-- **Responsive Design**: Fully optimized for mobile, tablet, and desktop
-- **Loading States**: Smooth loading indicators for all data fetches
-- **Professional UI**: Clean, modern SaaS-style interface with gradients and animations
+These instructions assume you want to run the Streamlit Python app in `app.py`. The project supports Windows PowerShell and cmd.exe workflows.
 
-## Tech Stack
+Recommended Python version: 3.10 or 3.11
 
-- **React 18** with TypeScript
-- **Vite** for fast development and building
-- **React Router** for navigation
-- **Recharts** for data visualizations
-- **Tailwind CSS** for styling
-- **Lucide React** for icons
-
-## Project Structure
-
-```
-src/
-├── components/           # Reusable UI components
-│   ├── CustomersTab.tsx
-│   ├── FeatureImportanceTab.tsx
-│   ├── RegionalTrendsTab.tsx
-│   ├── InsightsTab.tsx
-│   ├── Header.tsx
-│   ├── Tabs.tsx
-│   └── LoadingSpinner.tsx
-├── contexts/            # React context providers
-│   └── ThemeContext.tsx
-├── data/                # Mock API data
-│   ├── customers.json
-│   ├── featureImportance.json
-│   └── regionalTrends.json
-├── pages/               # Page components
-│   ├── Dashboard.tsx
-│   └── CustomerDetail.tsx
-├── services/            # API service layer
-│   └── api.ts
-├── App.tsx
-└── main.tsx
+### 1) Create & activate a virtual environment (PowerShell)
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install --upgrade pip
+pip install -r requirements.txt
 ```
 
-## Getting Started
-
-### Prerequisites
-
-- Node.js (v16 or higher)
-- npm or yarn
-
-### Installation
-
-1. Clone the repository or extract the project files
-
-2. Install dependencies:
-```bash
-npm install
+### 1b) Create & activate a virtual environment (cmd.exe)
+```cmd
+python -m venv .venv
+.\.venv\Scripts\activate.bat
+python -m pip install --upgrade pip
+pip install -r requirements.txt
 ```
 
-### Running the Application
+### 2) Generate or ensure sample data exists
+If you don't have your own dataset, generate the sample dataset used for demos:
 
-Development mode with hot reload:
-```bash
-npm run dev
+```powershell
+python datatraining/generate_sample_data.py
 ```
 
-The application will be available at `http://localhost:5173`
+This writes `datatraining/data/churn_data.csv` with sample rows used by the dashboard.
 
-### Building for Production
+### 3) Run the Streamlit app
 
-```bash
-npm run build
+```powershell
+streamlit run app.py
 ```
 
-The built files will be in the `dist/` directory.
+Visit http://localhost:8501 in your browser (Streamlit will usually open a browser tab automatically).
 
-### Preview Production Build
+---
 
-```bash
-npm run preview
-```
+## How the app works (short)
 
-## Mock API Endpoints
+- Load data (upload CSV or use sample data)
+- Train a model (RandomForest / XGBoost if available)
+- Generate predictions across dataset
+- Explain individual predictions with SHAP (global/local) and LIME (local)
+- Export predictions as CSV
 
-The application uses a simulated API layer that mimics the following endpoints:
+## Files you will interact with
 
-- `GET /api/customers` - List of all customers with churn predictions
-- `GET /api/customer/:id` - Individual customer details
-- `GET /api/feature_importance` - SHAP feature importance values
-- `GET /api/region_trends` - Regional churn statistics
+- `app.py` — main app file where UI, training, explainability, and download buttons live
+- `datatraining/` — contains training scripts and `generate_sample_data.py` to create example CSVs
+- `requirements.txt` — required packages for the Streamlit app
 
-### Integrating with Real API
+---
 
-To connect to your FastAPI backend:
+## Troubleshooting
 
-1. Update `src/services/api.ts` to replace mock data with actual fetch calls:
+- If Streamlit fails to start, make sure you activated the virtual environment and installed `requirements.txt`.
+- If LIME or XGBoost aren't available, the app will fall back to SHAP or RandomForest; check console logs for warnings about unavailable packages.
+- If uploads are large, the app limits to a maximum number of rows (see the Data Input tab in `app.py`).
 
-```typescript
-export const api = {
-  async getCustomers(): Promise<Customer[]> {
-    const response = await fetch('YOUR_API_URL/api/customers');
-    return response.json();
-  },
-  // ... other methods
-};
-```
+## Deployments & Live demo
 
-2. Add environment variables in `.env`:
+This repository is also deployed to Streamlit Cloud. Live demo URL:
 
-```
-VITE_API_BASE_URL=http://your-backend-url
-```
+https://retainrover.streamlit.app/
 
-3. Update the API service to use the environment variable:
+---
 
-```typescript
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-```
-
-## Data Structure
-
-### Customer Object
-```typescript
-interface Customer {
-  id: number;
-  name: string;
-  region: string;
-  churnProbability: number;
-  age: number;
-  tenure: number;
-  premiumAmount: number;
-  claimsCount: number;
-  lastInteraction: string;
-}
-```
-
-### Feature Importance Object
-```typescript
-interface FeatureImportance {
-  feature: string;
-  importance: number;
-  description: string;
-}
-```
-
-### Regional Trend Object
-```typescript
-interface RegionalTrend {
-  region: string;
-  churnRate: number;
-  totalCustomers: number;
-  churnedCustomers: number;
-  avgTenure: number;
-}
-```
-
-## Customization
-
-### Colors & Theme
-
-Modify `tailwind.config.js` to customize the color palette and design tokens.
-
-### Adding New Features
-
-1. Create feature-specific data in `src/data/`
-2. Add API method in `src/services/api.ts`
-3. Create component in `src/components/`
-4. Add to Dashboard tabs or routing as needed
-
-## Browser Support
-
-- Chrome (latest)
-- Firefox (latest)
-- Safari (latest)
-- Edge (latest)
-
-## Performance
-
-- Code splitting implemented via React Router
-- Lazy loading for heavy components
-- Optimized bundle size with tree shaking
-- Efficient re-renders with proper React patterns
-
-## Future Enhancements
-
-- Export data to CSV/PDF
-- Advanced filtering and search
-- Real-time data updates via WebSocket
-- Customer comparison tool
-- Predictive timeline visualization
-- Email notification system
-
-## License
-
-This project is for demonstration purposes.
-
-## Support
-
-For questions or issues, please contact your development team.
