@@ -632,14 +632,22 @@ def generate_local_shap_explanation(explainer, processed_data, feature_names, sa
     
     # Create dataframe for plotting
     if isinstance(shap_values, list):
+        shap_vals = shap_values[1][0].ravel()  # Class 1 (Churn) SHAP values, flattened to 1D
+        # Ensure feature_names matches the length of shap_vals
+        if len(feature_names) < len(shap_vals):
+            feature_names = list(feature_names) + [f"Feature_{i}" for i in range(len(feature_names), len(shap_vals))]
         shap_df = pd.DataFrame({
-            'Feature': feature_names[:len(shap_values[1][0])],
-            'Value': shap_values[1][0]  # Class 1 (Churn) SHAP values
+            'Feature': feature_names[:len(shap_vals)],
+            'Value': shap_vals
         }).sort_values('Value', ascending=False)
     else:
+        shap_vals = shap_values[0].ravel()  # Flattened to 1D
+        # Ensure feature_names matches the length of shap_vals
+        if len(feature_names) < len(shap_vals):
+            feature_names = list(feature_names) + [f"Feature_{i}" for i in range(len(feature_names), len(shap_vals))]
         shap_df = pd.DataFrame({
-            'Feature': feature_names[:len(shap_values[0])],
-            'Value': shap_values[0]
+            'Feature': feature_names[:len(shap_vals)],
+            'Value': shap_vals
         }).sort_values('Value', ascending=False)
     
     # Create plotly figure
