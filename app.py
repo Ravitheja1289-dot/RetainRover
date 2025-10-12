@@ -669,6 +669,120 @@ def generate_local_shap_explanation(explainer, processed_data, feature_names, sa
     
     return fig, shap_df
 
+def generate_personalized_lime_insight(customer_data, lime_df, churn_prob, customer_id):
+    """
+    Generate a detailed, personalized insight from LIME explanation for a specific customer
+    
+    Parameters:
+    -----------
+    customer_data : DataFrame
+        The customer data with all features
+    lime_df : DataFrame
+        DataFrame with LIME explanation values
+    churn_prob : float
+        Probability of churn for this customer
+    customer_id : str or int
+        ID of the customer being analyzed
+        
+    Returns:
+    --------
+    str
+        A detailed, personalized 4-5 line insight about the customer's churn risk
+    """
+    # Get top positive and negative factors
+    positive_factors = lime_df[lime_df['Value'] > 0].head(4)
+    negative_factors = lime_df[lime_df['Value'] < 0].head(4)
+    
+    # Get features and their impact strengths
+    pos_features = positive_factors['Feature'].tolist() if not positive_factors.empty else []
+    neg_features = negative_factors['Feature'].tolist() if not negative_factors.empty else []
+    
+    # For nice formatting of feature names
+    def clean_feature_name(feature):
+        return feature.replace('_', ' ').replace('cat__', '').replace('num__', '').title()
+    
+    # Generate risk assessment line
+    if churn_prob > 0.8:
+        risk_level = "very high risk"
+        tone = "urgent"
+    elif churn_prob > 0.65:
+        risk_level = "high risk"
+        tone = "concerning"
+    elif churn_prob > 0.5:
+        risk_level = "moderate risk"
+        tone = "concerning"
+    elif churn_prob > 0.3:
+        risk_level = "low risk"
+        tone = "mild"
+    else:
+        risk_level = "very low risk"
+        tone = "minimal"
+    
+    # Build the personalized insight
+    lines = []
+    
+    # Line 1: Overall assessment
+    lines.append(f"Customer #{customer_id} shows a {risk_level} of churn with a {churn_prob:.1%} probability, requiring {tone} attention.")
+    
+    # Line 2-3: Key risk factors
+    if pos_features:
+        pos_features_clean = [clean_feature_name(f) for f in pos_features[:3]]
+        # Handle case with only one feature
+        if len(pos_features_clean) == 1:
+            lines.append(f"The primary factor increasing their likelihood to leave is {pos_features_clean[0]}.")
+        else:
+            lines.append(f"The primary factors increasing their likelihood to leave are {', '.join(pos_features_clean[:-1])} and {pos_features_clean[-1]}.")
+        
+        # Add more specific details based on the factors
+        if any('age' in f.lower() for f in pos_features):
+            lines.append("Their age demographic shows higher churn patterns compared to our stable customer segments.")
+        elif any('tenure' in f.lower() for f in pos_features):
+            lines.append("Their relatively short relationship with us makes them more susceptible to competitor offers.")
+        elif any('premium' in f.lower() or 'price' in f.lower() for f in pos_features):
+            lines.append("They appear price-sensitive and may be finding our premiums less competitive than alternatives.")
+        elif any('service' in f.lower() or 'support' in f.lower() for f in pos_features):
+            lines.append("Recent service experiences may have created dissatisfaction that needs to be addressed.")
+        else:
+            lines.append("The pattern of risk factors suggests this customer may be actively comparing alternatives.")
+    else:
+        lines.append("While this customer shows some churn risk, no single factor stands out as dominant in their profile.")
+        lines.append("Their behavior suggests a gradual drift rather than specific dissatisfaction points.")
+    
+    # Line 4: Protective factors
+    if neg_features:
+        neg_features_clean = [clean_feature_name(f) for f in neg_features[:2]]
+        if len(neg_features_clean) == 1:
+            lines.append(f"Notably, {neg_features_clean[0]} is a positive factor that is currently helping retain this customer.")
+        else:
+            lines.append(f"Notably, {', '.join(neg_features_clean)} are positive factors that are currently helping retain this customer.")
+            
+        # Add additional insight about strength of protective factors vs risk factors
+        strongest_pos = positive_factors['Abs_Value'].max() if not positive_factors.empty else 0
+        strongest_neg = negative_factors['Abs_Value'].max() if not negative_factors.empty else 0
+        
+        if strongest_neg > strongest_pos:
+            lines.append("The protective factors appear strong enough to potentially counterbalance the risk factors if properly leveraged in retention efforts.")
+        else:
+            lines.append("However, these positive aspects may not be sufficient to overcome the primary risk factors without additional intervention.")
+    else:
+        lines.append("This customer shows few protective factors in their profile, making targeted intervention more critical.")
+    
+    # Line 5: Recommended approach
+    if churn_prob > 0.5:
+        if any('price' in f.lower() or 'premium' in f.lower() for f in pos_features):
+            lines.append("Recommended action: Offer a personalized discount or premium review within the next 30 days to address price sensitivity.")
+        elif any('service' in f.lower() for f in pos_features):
+            lines.append("Recommended action: Schedule a service quality follow-up call to address potential dissatisfaction points.")
+        elif any('tenure' in f.lower() for f in pos_features):
+            lines.append("Recommended action: Implement an early loyalty reward to strengthen their connection to our services.")
+        else:
+            lines.append("Recommended action: Proactive outreach with a personalized retention offer would be advisable within 2-4 weeks.")
+    else:
+        lines.append("Recommendation: Maintain current service levels while gradually introducing loyalty benefits to strengthen retention.")
+    
+    # Join all insights into a paragraph
+    return "\n\n".join(lines)
+
 def generate_english_insight(shap_df, churn_prob):
     """
     Generate plain-English insights from SHAP values
@@ -1387,27 +1501,82 @@ def render_dashboard():
                                 positive_factors = lime_df[lime_df['Value'] > 0].head(3)
                                 negative_factors = lime_df[lime_df['Value'] < 0].head(3)
                                 
-                                if not positive_factors.empty:
-                                    st.markdown("#### Top Factors Increasing Churn Risk:")
-                                    for i, (_, row) in enumerate(positive_factors.iterrows()):
-                                        st.markdown(f"**{i+1}. {row['Feature']}**: Impact score of {row['Value']:.4f}")
+                                # Display detailed explanation cards for better visualization
+                                st.markdown("### Personalized Customer Analysis")
                                 
-                                if not negative_factors.empty:
-                                    st.markdown("#### Top Factors Decreasing Churn Risk:")
-                                    for i, (_, row) in enumerate(negative_factors.iterrows()):
-                                        st.markdown(f"**{i+1}. {row['Feature']}**: Impact score of {row['Value']:.4f}")
+                                # Generate personalized explanation for this customer
+                                detailed_insight = generate_personalized_lime_insight(
+                                    customer_data,
+                                    lime_df, 
+                                    customer_prob,
+                                    selected_customer
+                                )
+                                
+                                # Display the personalized insights in a visually appealing format
+                                # Determine color based on risk level
+                                risk_color = "#ff6b6b" if customer_prob > 0.7 else "#ffa34d" if customer_prob > 0.5 else "#4CAF50"
+                                
+                                # Separate insights into paragraphs
+                                insights = detailed_insight.split("\n\n")
+                                
+                                st.markdown(f"""
+                                <div style="background-color: rgba(49, 51, 63, 0.7); border-radius: 10px; padding: 20px; margin-bottom: 15px; border-left: 4px solid {risk_color};">
+                                    <h4 style="color: {risk_color}; margin-top: 0;">Customer {selected_customer} - Detailed Retention Analysis</h4>
+                                    <div style="color: white;">
+                                """, unsafe_allow_html=True)
+                                
+                                # Display each paragraph of insight with proper styling
+                                for i, paragraph in enumerate(insights):
+                                    if i == 0:  # First paragraph (risk assessment) gets special styling
+                                        st.markdown(f"""
+                                        <p style="font-size: 16px; font-weight: bold; margin-bottom: 15px;">
+                                            {paragraph}
+                                        </p>
+                                        """, unsafe_allow_html=True)
+                                    elif "Recommendation" in paragraph:  # Recommendation gets special styling
+                                        st.markdown(f"""
+                                        <p style="background-color: rgba(76, 175, 80, 0.1); padding: 10px; border-radius: 5px; margin-top: 15px;">
+                                            <strong>🔍 {paragraph}</strong>
+                                        </p>
+                                        """, unsafe_allow_html=True)
+                                    else:  # Regular paragraphs
+                                        st.markdown(f"""
+                                        <p style="margin-bottom: 10px;">
+                                            {paragraph}
+                                        </p>
+                                        """, unsafe_allow_html=True)
                                 
                                 st.markdown("""
-                                #### What is LIME?
+                                    </div>
+                                </div>
+                                """, unsafe_allow_html=True)
                                 
-                                LIME (Local Interpretable Model-agnostic Explanations) creates a simpler, interpretable model
-                                around this specific prediction to explain what factors most influenced the outcome.
+                                # Still show the detailed factors for reference
+                                col1, col2 = st.columns(2)
                                 
-                                It works by perturbing the input data and seeing how the prediction changes, allowing us
-                                to understand which features matter most for this particular case.
+                                with col1:
+                                    if not positive_factors.empty:
+                                        st.markdown("#### Top Factors Increasing Churn Risk:")
+                                        for i, (_, row) in enumerate(positive_factors.iterrows()):
+                                            st.markdown(f"**{i+1}. {row['Feature']}**: Impact score of {row['Value']:.4f}")
                                 
-                                This helps identify customer-specific retention strategies based on their unique risk factors.
-                                """)
+                                with col2:
+                                    if not negative_factors.empty:
+                                        st.markdown("#### Top Factors Decreasing Churn Risk:")
+                                        for i, (_, row) in enumerate(negative_factors.iterrows()):
+                                            st.markdown(f"**{i+1}. {row['Feature']}**: Impact score of {row['Value']:.4f}")
+                                
+                                # Information about LIME in an expandable section
+                                with st.expander("What is LIME?", expanded=False):
+                                    st.markdown("""
+                                    LIME (Local Interpretable Model-agnostic Explanations) creates a simpler, interpretable model
+                                    around this specific prediction to explain what factors most influenced the outcome.
+                                    
+                                    It works by perturbing the input data and seeing how the prediction changes, allowing us
+                                    to understand which features matter most for this particular case.
+                                    
+                                    This helps identify customer-specific retention strategies based on their unique risk factors.
+                                    """)
 
                             except Exception as e:
                                 st.warning("LIME explanation could not be generated")
