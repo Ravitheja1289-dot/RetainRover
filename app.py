@@ -203,16 +203,13 @@ def load_sample_data():
         st.error(f"Error loading sample data: {e}")
         return None
 
-def preprocess_data(data):
+def add_feature_engineering(df):
     """
-    Preprocess data for model training with advanced feature engineering
-    Returns preprocessor and processed data
+    Add feature engineering to a dataframe
+    Returns the enhanced dataframe
     """
     # Make a copy to avoid modifying the original
-    df = data.copy()
-    
-    # List of excluded columns to ignore
-    exclude_cols = ['customer_id', 'CustomerID', 'churn', 'Churn']
+    df = df.copy()
     
     # Add feature engineering
     try:
@@ -223,7 +220,7 @@ def preprocess_data(data):
                 df['Age'], 
                 bins=[0, 25, 35, 45, 55, 65, 100], 
                 labels=['<25', '25-34', '35-44', '45-54', '55-64', '65+']
-            )
+            ).astype(str)  # Convert to string to avoid category issues
         
         if 'Tenure' in df.columns:
             # Tenure segments
@@ -231,7 +228,7 @@ def preprocess_data(data):
                 df['Tenure'], 
                 bins=[0, 12, 24, 36, 48, 60, float('inf')],
                 labels=['0-1yr', '1-2yrs', '2-3yrs', '3-4yrs', '4-5yrs', '5yr+']
-            )
+            ).astype(str)  # Convert to string to avoid category issues
             
         # If we have both premium and claims
         if 'Premium' in df.columns and 'Claims' in df.columns:
@@ -250,11 +247,21 @@ def preprocess_data(data):
     except Exception as e:
         st.warning(f"Some feature engineering steps were skipped: {e}")
     
-    # Identify numeric and categorical columns after feature engineering
-    numeric_cols = df.select_dtypes(include=['int64', 'float64']).columns.tolist()
+    return df
+
+def preprocess_data(data):
+    """
+    Preprocess data for model training
+    Returns preprocessor and feature information
+    """
+    # List of excluded columns to ignore
+    exclude_cols = ['customer_id', 'CustomerID', 'churn', 'Churn']
+    
+    # Identify numeric and categorical columns
+    numeric_cols = data.select_dtypes(include=['int64', 'float64']).columns.tolist()
     numeric_cols = [col for col in numeric_cols if col not in exclude_cols]
     
-    categorical_cols = df.select_dtypes(include=['object', 'category']).columns.tolist()
+    categorical_cols = data.select_dtypes(include=['object', 'category', 'string']).columns.tolist()
     categorical_cols = [col for col in categorical_cols if col not in exclude_cols]
     
     # Print the features being used
@@ -280,11 +287,8 @@ def preprocess_data(data):
         remainder='drop'  # Drop any columns not specified
     )
     
-    # Get feature names for SHAP
-    feature_names = numeric_cols.copy()
-    for col in categorical_cols:
-        unique_values = data[col].unique()
-        feature_names.extend([f"{col}_{val}" for val in unique_values])
+    # Get feature names for SHAP (will be updated after fitting)
+    feature_names = numeric_cols + categorical_cols
     
     return preprocessor, numeric_cols, categorical_cols, feature_names
 
@@ -1056,9 +1060,6 @@ def render_dashboard():
             with col2_2:
                 if st.button("Load Saved Model"):
                     try:
-                        # Local import to ensure it's available
-                        import os
-                        
                         # Check if model file exists
                         if os.path.exists('models/churn_pipeline.pkl'):
                             with st.spinner('Loading saved model...'):
@@ -1131,7 +1132,7 @@ def render_dashboard():
                             drop_cols.append(id_col)
                         drop_cols.append(target_col)
                         
-                        # Split data
+                        # Split data first (before feature engineering)
                         X = data.drop(drop_cols, axis=1, errors='ignore')
                         y = data[target_col]
                         
@@ -1148,8 +1149,13 @@ def render_dashboard():
                         # Show split information
                         st.info(f"Training set: {X_train.shape[0]} samples, Test set: {X_test.shape[0]} samples")
                         
-                        # Preprocess data with feature engineering
-                        preprocessor, numeric_cols, categorical_cols, feature_names = preprocess_data(data)
+                        # Apply feature engineering to train and test sets
+                        X_train = add_feature_engineering(X_train)
+                        X_test = add_feature_engineering(X_test)
+                        X = add_feature_engineering(X)  # Also apply to full X for later use
+                        
+                        # Create preprocessor based on the engineered features
+                        preprocessor, numeric_cols, categorical_cols, feature_names = preprocess_data(X_train)
                         st.session_state.feature_names = feature_names
                         
                         # Fit preprocessor
