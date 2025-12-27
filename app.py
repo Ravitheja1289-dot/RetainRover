@@ -985,6 +985,24 @@ def render_dashboard():
     with tab1:
         st.header("Data Input")
         
+        # Add sample data download button
+        st.subheader("Sample Dataset")
+        sample_data_path = os.path.join('datatraining', 'data', 'churn_data.csv')
+        if os.path.exists(sample_data_path):
+            with open(sample_data_path, 'rb') as f:
+                sample_csv_data = f.read()
+            st.download_button(
+                label="📥 Download Sample Data (churn_data.csv)",
+                data=sample_csv_data,
+                file_name="churn_data.csv",
+                mime="text/csv",
+                help="Download this sample dataset to test the prediction functionality"
+            )
+        else:
+            st.info("Sample data file not found at: datatraining/data/churn_data.csv")
+        
+        st.divider()
+        
         col1, col2 = st.columns(2)
         with col1:
             uploaded_file = st.file_uploader("Upload CSV file with customer data", type="csv")
