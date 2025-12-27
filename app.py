@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import time
 import os
+from pathlib import Path
 import random
 import joblib
 import shap
@@ -38,6 +39,9 @@ try:
 except ImportError:
     has_smote = False
 from io import StringIO
+
+# Resolve project base directory for reliable file paths in all environments
+BASE_DIR = Path(__file__).resolve().parent
 import plotly.express as px
 import plotly.graph_objects as go
 # Configure the page
@@ -190,7 +194,8 @@ def compute_shap_sample(_model, _preprocessor, data, feature_names, max_sample_s
 def load_sample_data():
     """Load sample churn data for demonstration"""
     try:
-        df = pd.read_csv('datatraining/data/churn_data.csv')
+        sample_data_path = BASE_DIR / 'datatraining' / 'data' / 'churn_data.csv'
+        df = pd.read_csv(sample_data_path)
         
         # Check for missing values in the data
         missing_values = df.isnull().sum().sum()
@@ -991,8 +996,8 @@ def render_dashboard():
         
         # Add sample data download button
         st.subheader("Sample Dataset")
-        sample_data_path = os.path.join('datatraining', 'data', 'churn_data.csv')
-        if os.path.exists(sample_data_path):
+        sample_data_path = BASE_DIR / 'datatraining' / 'data' / 'churn_data.csv'
+        if sample_data_path.exists():
             with open(sample_data_path, 'rb') as f:
                 sample_csv_data = f.read()
             st.download_button(
